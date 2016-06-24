@@ -15,10 +15,11 @@ sonify <- function(name, FUN){
   FUN <- match.fun(FUN)
   
   name <- tolower(name)
-  
   name <- stri_trans_general(name, id = "Latin-ASCII")
+  name <- gsub('[[:punct:] ]+', ' ', name)
   name_letters <- substring(name, 1:nchar(name), 1:nchar(name))
   name_letters <- as.numeric(factor(name_letters, levels = c(" ", letters)))
+  name[is.na(name)] <- 1
   
   sound <- vector(mode = "integer")
   

@@ -2,12 +2,15 @@ library(shiny)
 library(tuneR)
 library(seewave)
 library(stringi)
+library(markdown)
 
 source("functions/sonify.R")
 source("functions/audiotag.R")
 
 
-ui <- fluidPage(
+ui <- fluidPage(tabsetPanel(
+  
+  tabPanel("App", 
   titlePanel("Sonify your name (or any text)!!!"),
   
   sidebarPanel(
@@ -16,44 +19,68 @@ ui <- fluidPage(
     selectInput("wave_type", "Signal:", c("Sine" = "sine", "Pulse" = "pulse",
                                           "Sawtooth" = "sawtooth", 
                                           "Square" = "square")),
-    actionButton("button", "SONIFY!!!")
+    actionButton("button", "SONIFY!!!"),
+    downloadButton("wav_dln", label = "Download")
 ),
   
   
   mainPanel(
-    uiOutput("audiotag"),
+    
     textOutput("text"),
-    textOutput("click"),
+    uiOutput("audiotag"),
+    #textOutput("click"),
     plotOutput("spectro")
     
-  )
-)
+  )),
+
+tabPanel("Documentation",
+    includeMarkdown("README.md")
+         
+)))
   
   
   
 server <- function(input, output){
   
   
-  output$text <- renderText({input$name})
   
-  observeEvent(input$button, {
-    output$click <- renderText({input$button})
+  
+  #observeEvent(input$button, {
+   # output$click <- renderText({input$button})
     
-  })
+  #})
   
   
-  
+  ## Sonification event: generation, saving, downloading, playing
   observeEvent(input$button, {
+ #inputtext <- print("Your input," input$name, "sounds like this:")
+  output$text <- renderText({
+    paste0("Your input, ", input$name, ", sounds like this:")})
   sound <- sonify(input$name, input$wave_type) 
 
-  
+  # Saves file
   wvname <- paste0("sound", input$button,".wav")
   writeWave(sound, paste0("www/", wvname))
   
+  # Creates spectrogram {seewave}
   output$spectro <- renderPlot(spectro(sound, flim = c(0,5)))
   
+  # Creates audiotag
   output$audiotag <- renderUI(audiotag(wvname))
+  
+  ## Dawnload handler
+  output$wav_dln <- downloadHandler(
+    filename = function(){
+      paste0("sound", input$button, ".wav")
+    },
+    content = function(filename){
+      writeWave(sound, filename)
+    }
+  )
   })
+  
+  
+  
   
 }
   
