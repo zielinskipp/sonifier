@@ -19,6 +19,7 @@ ui <- fluidPage(tabsetPanel(
     selectInput("wave_type", "Signal:", c("Sine" = "sine", "Pulse" = "pulse",
                                           "Sawtooth" = "sawtooth", 
                                           "Square" = "square")),
+    checkboxInput("atten", label = "Attenuation", value = TRUE),
     actionButton("button", "SONIFY!!!"),
     downloadButton("wav_dln", label = "Download")
 ),
@@ -56,7 +57,7 @@ server <- function(input, output){
  #inputtext <- print("Your input," input$name, "sounds like this:")
   output$text <- renderText({
     paste0("Your input, ", input$name, ", sounds like this:")})
-  sound <- sonify(input$name, input$wave_type) 
+  sound <- sonify(input$name, input$wave_type, input$atten) 
 
   # Saves file
   wvname <- paste0("sound", input$button,".wav")

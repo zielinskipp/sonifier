@@ -2,7 +2,7 @@ require(stringi)
 require(tuneR)
 require(seewave)
 
-sonify <- function(name, FUN){
+sonify <- function(name, FUN, atten = T){
   
   freq <- c(1,
             65.41, 73.42, 82.41, 98.00, 110.00,
@@ -23,10 +23,16 @@ sonify <- function(name, FUN){
   
   sound <- vector(mode = "integer")
   
-  attenuate <- seq(0,1,length.out = 22051)[-1]
-  attenuate <- rev(exp(attenuate))
-  attenuate <- attenuate - 1
-  attenuate <- attenuate/max(attenuate)
+  if(atten){
+    attenuate <- seq(0,1,length.out = 22051)[-1]
+    attenuate <- rev(exp(attenuate))
+    attenuate <- attenuate - 1
+    attenuate <- attenuate/max(attenuate)
+  } else {
+    attenuate = 1
+    
+  }
+  
   
   for( i in 1: length(name_letters)){
     note <- FUN(freq[name_letters[i]], duration = 22050)@left
