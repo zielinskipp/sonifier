@@ -11,6 +11,7 @@ source("functions/audiotag.R")
 ui <- fluidPage(tabsetPanel(
   
   tabPanel("App", 
+           
   titlePanel("Sonify your name (or any text)!!!"),
   
   sidebarPanel(
@@ -19,17 +20,16 @@ ui <- fluidPage(tabsetPanel(
     selectInput("wave_type", "Signal:", c("Sine" = "sine", "Pulse" = "pulse",
                                           "Sawtooth" = "sawtooth", 
                                           "Square" = "square")),
+    
     checkboxInput("atten", label = "Attenuation", value = TRUE),
     actionButton("button", "SONIFY!!!"),
     downloadButton("wav_dln", label = "Download")
 ),
-  
-  
+
   mainPanel(
     
     textOutput("text"),
     uiOutput("audiotag"),
-    #textOutput("click"),
     plotOutput("spectro")
     
   )),
@@ -44,17 +44,9 @@ tabPanel("Documentation",
 server <- function(input, output){
   
   
-  
-  
-  #observeEvent(input$button, {
-   # output$click <- renderText({input$button})
-    
-  #})
-  
-  
-  ## Sonification event: generation, saving, downloading, playing
+## Sonification event: generation, saving, downloading, playing
   observeEvent(input$button, {
- #inputtext <- print("Your input," input$name, "sounds like this:")
+
   output$text <- renderText({
     paste0("Your input, ", input$name, ", sounds like this:")})
   sound <- sonify(input$name, input$wave_type, input$atten) 
@@ -79,10 +71,6 @@ server <- function(input, output){
     }
   )
   })
-  
-  
-  
-  
 }
   
   
